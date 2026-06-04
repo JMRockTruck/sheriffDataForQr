@@ -51,7 +51,10 @@ export const ModalComponent = ({ loading, modalVisible, titleModal, bodyModal, t
         <Modal
             visible={modalVisible}
             transparent
-            animationType="fade">
+            animationType="fade"
+            onRequestClose={onClose}
+
+        >
             <View style={styles.modalBackground}>
                 <View style={styles.modalContainer}>
                     {loading ? (
