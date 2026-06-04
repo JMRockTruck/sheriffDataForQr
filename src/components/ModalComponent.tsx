@@ -14,7 +14,7 @@ export const ModalComponent = ({ loading, modalVisible, titleModal, bodyModal, t
 
     const titleColor = (typeMessage: string) => {
         switch (typeMessage) {
-            case 'sussess':
+            case 'success':
                 return 'green';
             case 'warning':
                 return 'red';
@@ -25,7 +25,7 @@ export const ModalComponent = ({ loading, modalVisible, titleModal, bodyModal, t
 
     const renderIcon = (typeMessage: string) => {
         switch (typeMessage) {
-            case 'sussess':
+            case 'success':
                 return (
                     <Text style={{ color: titleColor(typeMessage), fontSize: 150, textAlign: 'center' }}>
                         ✔

@@ -39,7 +39,7 @@ export const getDataSheriff = async (identificationCode: string) => {
 
         return {
             textResp: `Persona rut ${identificationCode} no tiene antecedentes en Sheriff`,
-            typeResp: "sussess"
+            typeResp: "success"
         }
 
     } catch (error) {
