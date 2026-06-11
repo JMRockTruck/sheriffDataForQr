@@ -1,4 +1,4 @@
-export const hasJudicialRecords = async (data: string) => {
+export const hasJudicialRecordsSheriff = async (data: string) => {
     try {
         const FIELDS = [
             "casosCivilesActivos",

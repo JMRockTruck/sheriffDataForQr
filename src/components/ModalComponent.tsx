@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ActivityIndicator, Button, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Button, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 interface ModalInterface {
     loading: boolean
@@ -16,8 +16,10 @@ export const ModalComponent = ({ loading, modalVisible, titleModal, bodyModal, t
         switch (typeMessage) {
             case 'success':
                 return 'green';
-            case 'warning':
+            case 'danger':
                 return 'red';
+            case 'warning':
+                return '#BA8E23'
             default:
                 return 'grey';
         }
@@ -31,10 +33,16 @@ export const ModalComponent = ({ loading, modalVisible, titleModal, bodyModal, t
                         ✔
                     </Text>
                 )
-            case 'warning':
+            case 'danger':
                 return (
                     <Text style={{ color: titleColor(typeMessage), fontSize: 150, textAlign: 'center' }}>
                         ⚠
+                    </Text>
+                )
+            case 'warning':
+                return (
+                    <Text style={{ color: titleColor(typeMessage), fontSize: 150, textAlign: 'center' }}>
+                        👁
                     </Text>
                 )
             default:
@@ -72,13 +80,19 @@ export const ModalComponent = ({ loading, modalVisible, titleModal, bodyModal, t
                                 {titleModal}
                             </Text>
 
-                            <Text style={styles.label}>
-                                Datos adicionales:
-                            </Text>
+                            {bodyModal && (
+                                <>
+                                    <Text style={styles.label}>
+                                        Datos adicionales:
+                                    </Text>
+                                    <ScrollView style={styles.scrollContainer}>
+                                    <Text style={styles.value}>
+                                        {bodyModal}
+                                    </Text>
+                                    </ScrollView>
+                                </>
+                            )}
 
-                            <Text style={styles.value}>
-                                {bodyModal}
-                            </Text>
                             <Pressable
                                 style={styles.closeButton}
                                 onPress={onClose}
@@ -119,10 +133,13 @@ const styles = StyleSheet.create({
     },
     label: {
         fontWeight: 'bold',
+        fontSize: 12,
         marginTop: 15,
     },
     value: {
         marginBottom: 10,
+        fontSize: 15,
+        fontWeight: 'bold'
     },
     closeButton: {
         marginTop: 20,
@@ -137,4 +154,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 16,
     },
+    scrollContainer: {
+    maxHeight: 200,
+    marginBottom: 10,
+},
 });

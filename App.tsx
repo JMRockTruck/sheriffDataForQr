@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-	ActivityIndicator,
 	Animated,
 	StyleSheet,
 	Text,
@@ -10,7 +9,7 @@ import {
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 
-import { getDataSheriff } from './src/api/requestApi';
+import { getDataBlackListSamanta, getDataSheriff } from './src/api/requestApi';
 import { ModalComponent } from './src/components/ModalComponent';
 
 interface BarcodeScannedEvent {
@@ -93,6 +92,9 @@ export default function App() {
 		Vibration.vibrate(100);
 		setModalVisible(true);
 		setLoading(true);
+		setApiResponse("");
+		setTypeResponse("");
+		setSubTextModal("");
 
 		try {
 			const dataSplit = data.split('&')[0];
@@ -122,9 +124,23 @@ export default function App() {
 				setSubTextModal(`RUT: ${rutQuery}`);
 
 				if (rutQuery) {
-					const resultGetData = await getDataSheriff(rutQuery);
-					setApiResponse(resultGetData?.textResp);
-					setTypeResponse(resultGetData?.typeResp);
+
+					// Validamos lista negra de samanta
+					const resultDataBlackList = await getDataBlackListSamanta(rutQuery);
+
+					if (resultDataBlackList?.isBlackList === false) {
+						// Validamos mongo con datos de sheriff
+						const resultGetData = await getDataSheriff(rutQuery);
+						setApiResponse(resultGetData?.textResp);
+						setTypeResponse(resultGetData?.typeResp);
+						setSubTextModal(resultDataBlackList?.detailMotive)
+
+					} else {
+						setApiResponse(resultDataBlackList?.textResp);
+						setTypeResponse(resultDataBlackList?.typeResp);
+						setSubTextModal(resultDataBlackList?.detailMotive);
+					}
+
 				} else {
 					setApiResponse('QR escaneado no válido');
 					setTypeResponse('normal');
@@ -133,6 +149,10 @@ export default function App() {
 				setApiResponse('QR escaneado no válido');
 				setTypeResponse('normal');
 			}
+		} catch (error) {
+			setApiResponse('Error al solicitar datos');
+			setTypeResponse('danger');
+			setSubTextModal("Error en solicitar datos al servido");
 		} finally {
 			setLoading(false);
 		}
@@ -180,7 +200,9 @@ export default function App() {
 							<Text style={styles.badgeText}>CONSULTA DE ANTECEDENTES</Text>
 						</View>
 					</View>
-					<Text style={styles.appTitle}>Sheriff</Text>
+					{/* <Text style={styles.appTitle}>Sheriff</Text> */}
+					<Text style={styles.appTitle}>Consultar antecedentes</Text>
+
 					<Text style={styles.appSubtitle}>
 						Escanea el QR de la cédula para consultar antecedentes
 					</Text>
@@ -198,6 +220,9 @@ export default function App() {
 					<StatusChip />
 					<Text style={styles.footerHint}>
 						Apunta la cámara al QR de la cédula
+					</Text>
+					<Text style={{ ...styles.appSubtitle, color: '#F47174' }}>
+						IMPORTANTE: La informacion de Sheriff se actualiza en el sistema cada dia a las 1:30 AM
 					</Text>
 					<View style={styles.divider} />
 				</View>
@@ -287,7 +312,7 @@ const styles = StyleSheet.create({
 	},
 	appTitle: {
 		color: C.white,
-		fontSize: 28,
+		fontSize: 25,
 		fontWeight: '800',
 		letterSpacing: 0.5,
 	},
